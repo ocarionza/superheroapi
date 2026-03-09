@@ -5,10 +5,12 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 
@@ -57,7 +59,8 @@ export default function SearchScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
       <View style={styles.searchBar}>
         <TextInput
           style={styles.input}
@@ -108,7 +111,8 @@ export default function SearchScreen() {
           </Text>
         </View>
       )}
-    </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

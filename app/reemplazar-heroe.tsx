@@ -3,14 +3,16 @@ import axios from "axios";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -80,66 +82,71 @@ export default function PantallaReemplazarHeroe() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchBar}>
-        <TextInput
-          style={styles.input}
-          placeholder="Nombre del héroe..."
-          placeholderTextColor="#666"
-          value={consultaBusqueda}
-          onChangeText={setConsultaBusqueda}
-          onSubmitEditing={manejarBusqueda}
-          returnKeyType="search"
-          autoFocus
-        />
-        <TouchableOpacity style={styles.searchButton} onPress={manejarBusqueda}>
-          <Text style={styles.searchButtonText}>Buscar</Text>
-        </TouchableOpacity>
-      </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <View style={styles.searchBar}>
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre del héroe..."
+            placeholderTextColor="#666"
+            value={consultaBusqueda}
+            onChangeText={setConsultaBusqueda}
+            onSubmitEditing={manejarBusqueda}
+            returnKeyType="search"
+            autoFocus
+          />
+          <TouchableOpacity
+            style={styles.searchButton}
+            onPress={manejarBusqueda}
+          >
+            <Text style={styles.searchButtonText}>Buscar</Text>
+          </TouchableOpacity>
+        </View>
 
-      {buscando ? (
-        <ActivityIndicator
-          size="large"
-          color="#E53935"
-          style={{ marginTop: 40 }}
-        />
-      ) : (
-        <FlatList
-          data={resultadosBusqueda}
-          keyExtractor={(item: any) => item.id}
-          contentContainerStyle={{ padding: 12, gap: 8 }}
-          renderItem={({ item }: any) => (
-            <TouchableOpacity
-              style={styles.resultCard}
-              onPress={() => seleccionarHeroe(item)}
-            >
-              <Image
-                source={{ uri: item.imageUrl }}
-                style={styles.resultImage}
-              />
-              <View style={{ flex: 1, marginLeft: 12 }}>
-                <Text style={styles.resultName}>{item.name}</Text>
-                <Text style={styles.resultStats}>
-                  INT:{item.powerstats.intelligence} FUE:
-                  {item.powerstats.strength} VEL:{item.powerstats.speed}
-                </Text>
-                <Text style={styles.resultStats}>
-                  DUR:{item.powerstats.durability} POD:
-                  {item.powerstats.power} COM:{item.powerstats.combat}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-          ListEmptyComponent={
-            <Text style={styles.empty}>
-              {consultaBusqueda.trim()
-                ? "Sin resultados"
-                : "Busca un héroe para reemplazar tu carta"}
-            </Text>
-          }
-        />
-      )}
-    </View>
+        {buscando ? (
+          <ActivityIndicator
+            size="large"
+            color="#E53935"
+            style={{ marginTop: 40 }}
+          />
+        ) : (
+          <FlatList
+            data={resultadosBusqueda}
+            keyExtractor={(item: any) => item.id}
+            contentContainerStyle={{ padding: 12, gap: 8 }}
+            renderItem={({ item }: any) => (
+              <TouchableOpacity
+                style={styles.resultCard}
+                onPress={() => seleccionarHeroe(item)}
+              >
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={styles.resultImage}
+                />
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                  <Text style={styles.resultName}>{item.name}</Text>
+                  <Text style={styles.resultStats}>
+                    INT:{item.powerstats.intelligence} FUE:
+                    {item.powerstats.strength} VEL:{item.powerstats.speed}
+                  </Text>
+                  <Text style={styles.resultStats}>
+                    DUR:{item.powerstats.durability} POD:
+                    {item.powerstats.power} COM:{item.powerstats.combat}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            ListEmptyComponent={
+              <Text style={styles.empty}>
+                {consultaBusqueda.trim()
+                  ? "Sin resultados"
+                  : "Busca un héroe para reemplazar tu carta"}
+              </Text>
+            }
+          />
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
