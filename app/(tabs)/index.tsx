@@ -13,8 +13,7 @@ import {
   View,
 } from "react-native";
 
-const BASE_URL =
-  "https://superheroapi.com/api/bfb46904e3db0ea1b1f2ce2093a9842f";
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 function obtenerUrlImagen(id: any, name: any) {
   const slug = name
