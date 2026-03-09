@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -21,92 +22,8 @@ function getImageUrl(id: any, name: any) {
   return `https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/${id}-${slug}.jpg`;
 }
 
-const STAT_LABELS = [
-  { key: "intelligence", label: "Inteligencia" },
-  { key: "strength", label: "Fuerza" },
-  { key: "speed", label: "Velocidad" },
-  { key: "durability", label: "Durabilidad" },
-  { key: "power", label: "Poder" },
-  { key: "combat", label: "Combate" },
-];
-
-function HeroResultCard({ hero }: any) {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <TouchableOpacity
-      style={styles.resultCard}
-      onPress={() => setExpanded(!expanded)}
-      activeOpacity={0.8}
-    >
-      <View style={styles.resultHeader}>
-        <Image source={{ uri: hero.imageUrl }} style={styles.resultImage} />
-        <View style={styles.resultInfo}>
-          <Text style={styles.resultName}>{hero.name}</Text>
-          <Text style={styles.resultFullName}>
-            {hero.biography["full-name"] || "Desconocido"}
-          </Text>
-          <Text style={styles.resultPublisher}>
-            {hero.biography.publisher || "Sin editorial"}
-          </Text>
-        </View>
-      </View>
-
-      {expanded && (
-        <View style={styles.expandedInfo}>
-          <Text style={styles.sectionTitle}>Estadísticas</Text>
-          {STAT_LABELS.map(({ key, label }) => (
-            <View key={key} style={styles.statRow}>
-              <Text style={styles.statLabel}>{label}</Text>
-              <View style={styles.statBarBg}>
-                <View
-                  style={[
-                    styles.statBarFill,
-                    {
-                      width: `${Math.max(parseInt(hero.powerstats[key]) || 0, 5)}%`,
-                    },
-                  ]}
-                />
-              </View>
-              <Text style={styles.statValue}>{hero.powerstats[key]}</Text>
-            </View>
-          ))}
-
-          <Text style={styles.sectionTitle}>Biografía</Text>
-          <Text style={styles.detailText}>
-            Nombre completo: {hero.biography["full-name"] || "-"}
-          </Text>
-          <Text style={styles.detailText}>
-            Lugar de nacimiento: {hero.biography["place-of-birth"] || "-"}
-          </Text>
-          <Text style={styles.detailText}>
-            Primera aparición: {hero.biography["first-appearance"] || "-"}
-          </Text>
-          <Text style={styles.detailText}>
-            Alineación: {hero.biography.alignment || "-"}
-          </Text>
-
-          <Text style={styles.sectionTitle}>Apariencia</Text>
-          <Text style={styles.detailText}>
-            Género: {hero.appearance.gender} | Raza: {hero.appearance.race}
-          </Text>
-          <Text style={styles.detailText}>
-            Altura: {hero.appearance.height?.join(" / ") || "-"}
-          </Text>
-          <Text style={styles.detailText}>
-            Peso: {hero.appearance.weight?.join(" / ") || "-"}
-          </Text>
-          <Text style={styles.detailText}>
-            Ojos: {hero.appearance["eye-color"]} | Cabello:{" "}
-            {hero.appearance["hair-color"]}
-          </Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-}
-
 export default function SearchScreen() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -124,7 +41,8 @@ export default function SearchScreen() {
       );
       if (res.data.response === "success") {
         const heroes = res.data.results.map((hero: any) => ({
-          ...hero,
+          id: hero.id,
+          name: hero.name,
           imageUrl: getImageUrl(hero.id, hero.name),
         }));
         setResults(heroes);
@@ -164,8 +82,20 @@ export default function SearchScreen() {
         <FlatList
           data={results}
           keyExtractor={(item: any) => item.id}
-          renderItem={({ item }: any) => <HeroResultCard hero={item} />}
-          contentContainerStyle={styles.listContent}
+          numColumns={3}
+          contentContainerStyle={styles.grid}
+          renderItem={({ item }: any) => (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => router.push(`/hero/${item.id}` as any)}
+              activeOpacity={0.7}
+            >
+              <Image source={{ uri: item.imageUrl }} style={styles.cardImage} />
+              <Text style={styles.cardName} numberOfLines={1}>
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          )}
         />
       ) : searched ? (
         <View style={styles.centerContainer}>
@@ -227,93 +157,29 @@ const styles = StyleSheet.create({
     color: "#666",
     fontSize: 16,
   },
-  listContent: {
-    padding: 12,
-    gap: 10,
+  grid: {
+    padding: 8,
   },
-  resultCard: {
+  card: {
+    flex: 1,
+    margin: 4,
     backgroundColor: "#16213e",
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#0f3460",
-  },
-  resultHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  resultImage: {
-    width: 70,
-    height: 70,
     borderRadius: 10,
-  },
-  resultInfo: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  resultName: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  resultFullName: {
-    color: "#aaa",
-    fontSize: 13,
-    marginTop: 2,
-  },
-  resultPublisher: {
-    color: "#E53935",
-    fontSize: 12,
-    marginTop: 2,
-  },
-  expandedInfo: {
-    marginTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#0f3460",
-    paddingTop: 10,
-  },
-  sectionTitle: {
-    color: "#E53935",
-    fontSize: 13,
-    fontWeight: "bold",
-    textTransform: "uppercase",
-    marginTop: 8,
-    marginBottom: 4,
-    letterSpacing: 1,
-  },
-  statRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 2,
-  },
-  statLabel: {
-    color: "#ccc",
-    fontSize: 12,
-    width: 90,
-  },
-  statBarBg: {
-    flex: 1,
-    height: 10,
-    backgroundColor: "#0a0a23",
-    borderRadius: 5,
     overflow: "hidden",
-    marginHorizontal: 8,
+    alignItems: "center",
+    maxWidth: "33.33%",
   },
-  statBarFill: {
-    height: 10,
-    backgroundColor: "#4CAF50",
-    borderRadius: 5,
+  cardImage: {
+    width: "100%",
+    aspectRatio: 1,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
-  statValue: {
+  cardName: {
     color: "#fff",
     fontSize: 12,
     fontWeight: "bold",
-    width: 30,
-    textAlign: "right",
-  },
-  detailText: {
-    color: "#ccc",
-    fontSize: 12,
-    marginVertical: 1,
+    padding: 6,
+    textAlign: "center",
   },
 });

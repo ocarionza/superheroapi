@@ -15,6 +15,15 @@ export default function RootLayout() {
             headerTintColor: "#fff",
           }}
         />
+        <Stack.Screen
+          name="hero/[id]"
+          options={{
+            headerShown: true,
+            headerTitle: "Detalle del héroe",
+            headerStyle: { backgroundColor: "#0a0a23" },
+            headerTintColor: "#fff",
+          }}
+        />
       </Stack>
     </ProveedorReemplazoHeroe>
   );
