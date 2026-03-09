@@ -1,12 +1,13 @@
+import BarraEstadistica from "@/components/BarraEstadistica/BarraEstadistica";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
-const STAT_LABELS = [
-  { key: "intelligence", label: "Inteligencia" },
-  { key: "strength", label: "Fuerza" },
-  { key: "speed", label: "Velocidad" },
-  { key: "durability", label: "Durabilidad" },
-  { key: "power", label: "Poder" },
-  { key: "combat", label: "Combate" },
+const ETIQUETAS_STATS = [
+  { key: "intelligence", label: "INT" },
+  { key: "strength", label: "FUE" },
+  { key: "speed", label: "VEL" },
+  { key: "durability", label: "DUR" },
+  { key: "power", label: "POD" },
+  { key: "combat", label: "COM" },
 ];
 
 export default function ContenidoDetalleHeroe({ hero }: any) {
@@ -20,23 +21,14 @@ export default function ContenidoDetalleHeroe({ hero }: any) {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Estadísticas</Text>
-        {STAT_LABELS.map(({ key, label }) => {
-          const value = parseInt(hero.powerstats[key]) || 0;
-          return (
-            <View key={key} style={styles.statRow}>
-              <Text style={styles.statLabel}>{label}</Text>
-              <View style={styles.statBarBg}>
-                <View
-                  style={[
-                    styles.statBarFill,
-                    { width: `${Math.max(value, 5)}%` },
-                  ]}
-                />
-              </View>
-              <Text style={styles.statValue}>{hero.powerstats[key]}</Text>
-            </View>
-          );
-        })}
+        {ETIQUETAS_STATS.map(({ key, label }) => (
+          <BarraEstadistica
+            key={key}
+            label={label}
+            value={parseInt(hero.powerstats[key]) || 0}
+            result={null}
+          />
+        ))}
       </View>
 
       <View style={styles.section}>
@@ -117,36 +109,6 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: 10,
-  },
-  statRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 4,
-  },
-  statLabel: {
-    color: "#ccc",
-    fontSize: 13,
-    width: 100,
-  },
-  statBarBg: {
-    flex: 1,
-    height: 12,
-    backgroundColor: "#16213e",
-    borderRadius: 6,
-    overflow: "hidden",
-    marginHorizontal: 8,
-  },
-  statBarFill: {
-    height: 12,
-    backgroundColor: "#4CAF50",
-    borderRadius: 6,
-  },
-  statValue: {
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: "bold",
-    width: 35,
-    textAlign: "right",
   },
   detailText: {
     color: "#ccc",
